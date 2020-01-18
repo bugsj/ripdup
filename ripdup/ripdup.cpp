@@ -9,9 +9,9 @@ int main()
 {
     ISOImageRipper iso;
     iso.open(L"d:\\luojie\\Downloads\\1224 - Castlevania - The Dracula X Chronicles (Korea) (En,Ja) (v2.00) [b].iso");
-    iso.scanISO();
+    iso.scan();
     iso.checkDup();
-    //iso.write(L"d:\\luojie\\Downloads\\Castlevania_rip.iso");
+    iso.write(L"d:\\luojie\\Downloads\\Castlevania_rip0.iso");
     iso.closefile();
     return 0;
 }

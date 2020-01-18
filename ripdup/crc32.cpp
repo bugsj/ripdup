@@ -44,15 +44,14 @@ const unsigned int crc32_tab[] = {
 	0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-unsigned int
-crc32(const void* buf, size_t size)
+unsigned int crc32(const void* buf, size_t size)
 {
 	const unsigned char* p = reinterpret_cast<const unsigned char*>(buf);
-	unsigned int crc;
-	
-	crc = ~0U;
-	while (size--)
+	unsigned int crc = ~0U;
+
+	while (size--) {
 		crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
+	}
 
 	return crc ^ ~0U;
 }

@@ -22,8 +22,8 @@ public:
 		closefile();
 	}
 	int open(const TCHAR* filename);
-	int scanISODir(unsigned long long lba, long long size, std::vector<char>* fullname);
-	int scanISO();
+	int scanDir(unsigned long long lba, long long size, std::vector<char>* fullname);
+	int scan();
 	int checkDup();
 	int write(const TCHAR* filename);
 	unsigned long long getFileLBA(unsigned long long offset) {

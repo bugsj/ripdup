@@ -42,7 +42,7 @@ int ISOImageRipper::open(const TCHAR* filename)
 	return 0;
 }
 
-int ISOImageRipper::scanISO()
+int ISOImageRipper::scan()
 {
 	u8* buf = m_headbuf.data() + 0x8000;
 
@@ -68,13 +68,13 @@ int ISOImageRipper::scanISO()
 		std::vector<char> fullname(2);
 		fullname[0] = '\\';
 		fullname[1] = '\0';
-		int result = scanISODir(*(u32*)(buf + 156 + 2), *(u32*)(buf + 156 + 10), &fullname);
+		int result = scanDir(*(u32*)(buf + 156 + 2), *(u32*)(buf + 156 + 10), &fullname);
 		printf("file count: %d\n", static_cast<int>(m_filecount));
 		return result;
 	}
 }
 
-int ISOImageRipper::scanISODir(unsigned long long lba, long long size, std::vector<char> *fullname)
+int ISOImageRipper::scanDir(unsigned long long lba, long long size, std::vector<char> *fullname)
 {
 	u8* buf = m_headbuf.data() + lba * SECTOR_SIZE;
 	size_t pathsize = fullname->size();
@@ -88,6 +88,7 @@ int ISOImageRipper::scanISODir(unsigned long long lba, long long size, std::vect
 				break;
 			}
 		}
+
 		u64 fileLBA = *(u32*)(buf + offset + 0x2);
 		if (fileLBA <= lba) {
 			continue;
@@ -118,12 +119,20 @@ int ISOImageRipper::scanISODir(unsigned long long lba, long long size, std::vect
 			fullname->at(pathsize + filenamesize) = '\0';
 			std::printf("LBA: %d, Size: %d, ", static_cast<int>(fileLBA), static_cast<int>(filesize));
 			std::printf("Name:%s\n", fullname->data());
-			scanISODir(fileLBA, filesize, fullname);
+			scanDir(fileLBA, filesize, fullname);
 		}
 		else {
 			fullname->resize(pathsize + filenamesize);
 			memcpy(fullname->data() + pathsize - 1, filename.data(), filenamesize);
 			fullname->at(pathsize + filenamesize - 1) = '\0';
+
+			if (memcmp(fullname->data(), "\\PSP_GAME\\SYSDIR\\UPDATE\\", 24) == 0 || memcmp(fullname->data(), "\\PSP_GAME\\SYSDIR\\BOOT.BIN", 25) == 0) {
+				*(u32*)(buf + offset + 10) = 0x0;
+				*(u32*)(buf + offset + 14) = 0x0;
+				filesize = 0;
+				std::printf("!!!!File Ripped:%s\n", fullname->data());
+			}
+
 			if (filesize != 0) {
 				unsigned int crc = crc32(fileLBA, filesize);
 				std::printf("LBA: %d, Size: %d, CRC32: %08x, ", static_cast<int>(fileLBA), static_cast<int>(filesize), crc);
@@ -132,9 +141,14 @@ int ISOImageRipper::scanISODir(unsigned long long lba, long long size, std::vect
 				m_filefullname.push_back(*fullname);
 			}
 			else {
-				std::printf("Null file. ");
+				std::printf("Null File. ");
+				m_filerec.push_back(buf - m_headbuf.data() + offset);
+				m_filecrc32.push_back(0);
+				m_filefullname.push_back(*fullname);
 			}
 			std::printf("Name:%s\n", fullname->data());
+
+
 			++m_filecount;
 		}
 		fullname->resize(pathsize);
@@ -165,7 +179,7 @@ int ISOImageRipper::checkDup()
 
 	m_filelink.resize(size);
 	std::fill(m_filelink.begin(), m_filelink.end(), -1);
-	u32 crc = 0;
+	u32 crc = ~0;
 	long long one = -1;
 	for (size_t i = 0; i < size; ++i) {
 		if (i < size - 1 && crc != m_filecrc32[orderidx[i]] && m_filecrc32[orderidx[i]] == m_filecrc32[orderidx[i + 1]]) {
