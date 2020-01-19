@@ -148,7 +148,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="crc32.cpp" />
-    <ClCompile Include="ISOImageRipper.cpp" />
+    <ClCompile Include="ISOImageRipper.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="ripdup.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@ public:
 		closefile();
 	}
 	int open(const TCHAR* filename);
-	int scanDir(unsigned long long lba, long long size, std::vector<char>* fullname);
+	int scanDir(unsigned long long lba, unsigned long long size, std::vector<char>* fullname);
 	int scan();
 	int checkDup();
 	int write(const TCHAR* filename);
