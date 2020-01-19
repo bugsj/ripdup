@@ -24,12 +24,18 @@
     <ClCompile Include="crc32.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="FileDialog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISOImageRipper.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="crc32.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDialog.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="crc32.cpp" />
+    <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="ISOImageRipper.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
@@ -155,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crc32.h" />
+    <ClInclude Include="FileDialog.h" />
     <ClInclude Include="ISOImageRipper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -17,7 +17,7 @@ inline unsigned int crc32(const void* buf, size_t size)
 		}
 		else {
 			crc = _mm_crc32_u8(static_cast<unsigned int>(crc), *p++);
-			size--;
+			--size;
 		}
 	}
 
