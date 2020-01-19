@@ -5,11 +5,11 @@ int main()
 {
     ISOImageRipper iso;
     std::vector<WCHAR> ifile;
-    if (getInputFile(&ifile) == 0) {
+    if (getInputFile(&ifile) <= 0) {
         return 1;
     }
     std::vector<WCHAR> ofile;
-    if (getOutputFile(&ofile) == 0) {
+    if (getOutputFile(&ofile) <= 0) {
         return 2;
     }
     iso.open(ifile.data());

@@ -183,10 +183,10 @@ int ISOImageRipper::checkDup()
 		if (i < size - 1 && crc != m_filecrc32[orderidx[i]] && m_filecrc32[orderidx[i]] == m_filecrc32[orderidx[i + 1]]) {
 			crc = m_filecrc32[orderidx[i]];
 			one = orderidx[i];
-			printf("crc: %08x\n", crc);
+			std::printf("crc: %08x\n", crc);
 		}
 		if (crc == m_filecrc32[orderidx[i]]) {
-			printf("%s\n", m_filefullname[orderidx[i]].data());
+			std::printf("%s\n", m_filefullname[orderidx[i]].data());
 			if (one != orderidx[i]) {
 				m_filelink[orderidx[i]] = one;
 			}

@@ -1,4 +1,4 @@
 #pragma once
 
-int getInputFile(std::vector<WCHAR>* file);
-int getOutputFile(std::vector<WCHAR>* file);
+long long getInputFile(std::vector<WCHAR>* file);
+long long getOutputFile(std::vector<WCHAR>* file);

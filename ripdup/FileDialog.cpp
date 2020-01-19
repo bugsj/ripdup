@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include <Shobjidl.h>
+#include <atlbase.h>
 
 #include "FileDialog.h"
 
@@ -12,103 +13,65 @@ COMDLG_FILTERSPEC FileSpec[] =
     { L"所有文件", L"*.*" },
 };
 
-int getInputFile(std::vector<WCHAR>* file)
+#define CHECKHR(expr) do { if (!SUCCEEDED(expr)) { return -1; } } while(false)
+
+long long getInputFile(std::vector<WCHAR>* file)
 {
     file->clear();
-    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-        COINIT_DISABLE_OLE1DDE);
-    if (SUCCEEDED(hr))
-    {
-        IFileOpenDialog* pFileOpen;
+    CHECKHR(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
 
-        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
-            IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+    CComPtr<IFileOpenDialog> pFileOpen;
 
-        if (SUCCEEDED(hr))
-        {
-            hr = pFileOpen->SetFileTypes(std::size(FileSpec), FileSpec);
-            if (SUCCEEDED(hr))
-            {
-                hr = pFileOpen->SetDefaultExtension(L"iso");
-                if (SUCCEEDED(hr))
-                {
-                    hr = pFileOpen->Show(NULL);
+    CHECKHR(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen)));
 
-                    if (SUCCEEDED(hr))
-                    {
-                        IShellItem* pItem;
-                        hr = pFileOpen->GetResult(&pItem);
-                        if (SUCCEEDED(hr))
-                        {
-                            PWSTR pszFilePath;
-                            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+    CHECKHR(pFileOpen->SetFileTypes(std::size(FileSpec), FileSpec));
+    CHECKHR(pFileOpen->SetDefaultExtension(L"iso"));
+    CHECKHR(pFileOpen->Show(NULL));
 
-                            if (SUCCEEDED(hr))
-                            {
-                                size_t size = wcslen(pszFilePath);
-                                file->resize(size + 1);
-                                wmemcpy(file->data(), pszFilePath, size + 1);
-                                CoTaskMemFree(pszFilePath);
-                            }
-                            pItem->Release();
-                        }
-                    }
-                    pFileOpen->Release();
-                }
-            }
-        }
-        CoUninitialize();
-    }
+    CComPtr<IShellItem> pItem;
+    
+    CHECKHR(pFileOpen->GetResult(&pItem));
+
+    PWSTR pszFilePath;
+    CHECKHR(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath));
+
+    size_t size = wcslen(pszFilePath);
+    file->resize(size + 1);
+    wmemcpy(file->data(), pszFilePath, size + 1);
+    CoTaskMemFree(pszFilePath);
+    
+    CoUninitialize();
+    
     return file->size();
 }
 
 
-int getOutputFile(std::vector<WCHAR>* file)
+long long getOutputFile(std::vector<WCHAR>* file)
 {
     file->clear();
-    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-        COINIT_DISABLE_OLE1DDE);
-    if (SUCCEEDED(hr))
-    {
-        IFileOpenDialog* pFileSave;
+    CHECKHR(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
 
-        hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL,
-            IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
+    CComPtr<IFileOpenDialog> pFileSave;
 
-        if (SUCCEEDED(hr))
-        {
-            hr = pFileSave->SetFileTypes(std::size(FileSpec), FileSpec);
-            if (SUCCEEDED(hr))
-            {
-                hr = pFileSave->SetDefaultExtension(L"iso");
-                if (SUCCEEDED(hr))
-                {
-                    hr = pFileSave->Show(NULL);
+    CHECKHR(CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave)));
 
-                    if (SUCCEEDED(hr))
-                    {
-                        IShellItem* pItem;
-                        hr = pFileSave->GetResult(&pItem);
-                        if (SUCCEEDED(hr))
-                        {
-                            PWSTR pszFilePath;
-                            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+    CHECKHR(pFileSave->SetFileTypes(std::size(FileSpec), FileSpec));
+    CHECKHR(pFileSave->SetDefaultExtension(L"iso"));
+    CHECKHR(pFileSave->Show(NULL));
 
-                            if (SUCCEEDED(hr))
-                            {
-                                size_t size = wcslen(pszFilePath);
-                                file->resize(size + 1);
-                                wmemcpy(file->data(), pszFilePath, size + 1);
-                                CoTaskMemFree(pszFilePath);
-                            }
-                            pItem->Release();
-                        }
-                    }
-                    pFileSave->Release();
-                }
-            }
-        }
-        CoUninitialize();
-    }
+    CComPtr<IShellItem> pItem;
+
+    CHECKHR(pFileSave->GetResult(&pItem));
+
+    PWSTR pszFilePath;
+    CHECKHR(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath));
+
+    size_t size = wcslen(pszFilePath);
+    file->resize(size + 1);
+    wmemcpy(file->data(), pszFilePath, size + 1);
+    CoTaskMemFree(pszFilePath);
+
+    CoUninitialize();
+
     return file->size();
 }
