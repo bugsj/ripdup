@@ -21,7 +21,6 @@ long long getInputFile(std::vector<WCHAR>* file)
     CHECKHR(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
 
     CComPtr<IFileOpenDialog> pFileOpen;
-
     CHECKHR(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen)));
 
     CHECKHR(pFileOpen->SetFileTypes(std::size(FileSpec), FileSpec));
@@ -29,16 +28,14 @@ long long getInputFile(std::vector<WCHAR>* file)
     CHECKHR(pFileOpen->Show(NULL));
 
     CComPtr<IShellItem> pItem;
-    
     CHECKHR(pFileOpen->GetResult(&pItem));
 
-    PWSTR pszFilePath;
+    CComHeapPtr<WCHAR> pszFilePath;
     CHECKHR(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath));
 
     size_t size = wcslen(pszFilePath);
     file->resize(size + 1);
     wmemcpy(file->data(), pszFilePath, size + 1);
-    CoTaskMemFree(pszFilePath);
     
     CoUninitialize();
     
@@ -51,8 +48,7 @@ long long getOutputFile(std::vector<WCHAR>* file)
     file->clear();
     CHECKHR(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
 
-    CComPtr<IFileOpenDialog> pFileSave;
-
+    CComPtr<IFileSaveDialog> pFileSave;
     CHECKHR(CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave)));
 
     CHECKHR(pFileSave->SetFileTypes(std::size(FileSpec), FileSpec));
@@ -60,16 +56,14 @@ long long getOutputFile(std::vector<WCHAR>* file)
     CHECKHR(pFileSave->Show(NULL));
 
     CComPtr<IShellItem> pItem;
-
     CHECKHR(pFileSave->GetResult(&pItem));
 
-    PWSTR pszFilePath;
+    CComHeapPtr<WCHAR> pszFilePath;
     CHECKHR(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath));
 
     size_t size = wcslen(pszFilePath);
     file->resize(size + 1);
     wmemcpy(file->data(), pszFilePath, size + 1);
-    CoTaskMemFree(pszFilePath);
 
     CoUninitialize();
 

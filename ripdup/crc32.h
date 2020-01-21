@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nmmintrin.h>
+#include <intrin.h>
 
 inline unsigned int crc32(const void* buf, size_t size)
 {

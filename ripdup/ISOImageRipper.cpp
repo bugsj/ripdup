@@ -241,6 +241,7 @@ int ISOImageRipper::write(const TCHAR* filename)
 		ReadFile(m_isofile, filebuf.data(), static_cast<DWORD>(size), &rsize, NULL);
 		WriteFile(ripiso, filebuf.data(), static_cast<DWORD>(rsize), &bytes_write, NULL);
 	}
+	CloseHandle(ripiso);
 
 	return 0;
 }
